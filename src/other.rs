@@ -41,7 +41,7 @@ impl Client {
 
 #[cfg(test)]
 mod tests {
-    use crate::*;
+    use super::*;
 
     #[tokio::test]
     async fn test_market() {
@@ -63,7 +63,7 @@ mod tests {
     async fn test_tools_inspect() {
         let client = Client::new();
         let err = client.tools_inspect(String::new()).await.unwrap();
-        let err: crate::crate::ResponseError = serde_json::from_value(err).unwrap();
+        let err: crate::ResponseError = serde_json::from_value(err).unwrap();
         assert_eq!(err.status, 500);
     }
 }

@@ -106,7 +106,7 @@ mod serde_string {
     }
 
     pub mod option {
-        use crate::*;
+        use super::*;
 
         pub fn serialize<T: ToString, S: Serializer>(
             value: Option<T>,
@@ -143,7 +143,7 @@ mod serde_string {
     }
 
     pub mod vec {
-        use crate::*;
+        use super::*;
         use serde::ser::SerializeSeq;
 
         pub fn serialize<T: ToString, S: Serializer>(

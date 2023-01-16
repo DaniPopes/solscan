@@ -80,7 +80,7 @@ impl Client {
 
 #[cfg(test)]
 mod tests {
-    use crate::*;
+    use super::*;
 
     const SLOT: u64 = 172407028;
     const HEIGHT: u64 = 156357404;
