@@ -89,10 +89,10 @@ pub enum SortBy {
     PriceChange1y,
 }
 
-impl Into<&'static str> for SortBy {
-    fn into(self) -> &'static str {
+impl From<SortBy> for &'static str {
+    fn from(val: SortBy) -> Self {
         use SortBy::*;
-        match self {
+        match val {
             MarketCap => "market_cap",
             Volume => "volume",
             Holder => "holder",
