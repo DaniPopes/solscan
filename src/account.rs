@@ -1,21 +1,20 @@
 //! Solscan API - Account section
 
 use crate::{concat_1, Client, Result};
-use serde::Deserialize;
 use solana_sdk::pubkey::Pubkey;
 
 // TODO: remaining routes
 
-#[derive(Clone, Debug, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Account {
-    pub lamports: u64,
-    #[serde(with = "crate::serde_string")]
-    pub owner_program: Pubkey,
-    pub r#type: String,
-    pub rent_epoch: u64,
-    #[serde(with = "crate::serde_string")]
-    pub account: Pubkey,
+api_models! {
+    pub struct Account {
+        pub lamports: u64,
+        #[serde(with = "crate::serde_string")]
+        pub owner_program: Pubkey,
+        pub r#type: String,
+        pub rent_epoch: u64,
+        #[serde(with = "crate::serde_string")]
+        pub account: Pubkey,
+    }
 }
 
 impl From<Account> for solana_sdk::account::Account {

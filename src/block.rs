@@ -3,28 +3,32 @@
 use crate::{
     concat_1, Client, ClientError, ResponseError, ResponseErrorMessage, Result, TransactionInfo,
 };
-use serde::Deserialize;
 use solana_sdk::hash::Hash;
 
-#[derive(Clone, Debug, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct BlockInfo {
-    pub block_height: Option<u64>,
-    pub block_time: Option<u64>,
-    #[serde(with = "crate::serde_string")]
-    pub blockhash: Hash,
-    pub parent_slot: u64,
-    #[serde(with = "crate::serde_string")]
-    pub previous_blockhash: Hash,
-    pub fee_rewards: u64,
-    pub transaction_count: u64,
-}
+api_models! {
+    pub struct BlockInfo {
+        pub block_height: Option<u64>,
+        pub block_time: Option<u64>,
+        #[serde(with = "crate::serde_string")]
+        pub blockhash: Hash,
+        pub parent_slot: u64,
+        #[serde(with = "crate::serde_string")]
+        pub previous_blockhash: Hash,
+        pub fee_rewards: u64,
+        pub transaction_count: u64,
+    }
 
-#[derive(Clone, Debug, Deserialize)]
-#[serde(untagged)]
-pub enum BlockResult {
-    Ok(BlockInfo),
-    Err { code: i32, message: String },
+    pub enum BlockResult {
+        Ok(BlockInfo),
+        Err { code: i32, message: String },
+        #[default]
+        Fallback
+    }
+
+    pub struct Block {
+        pub current_slot: u64,
+        pub result: BlockResult,
+    }
 }
 
 impl From<BlockResult> for Result<BlockInfo> {
@@ -41,15 +45,9 @@ impl BlockResult {
                 status: code,
                 error: ResponseErrorMessage { message },
             })),
+            _ => Err(ClientError::EmptyResponse),
         }
     }
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Block {
-    pub current_slot: u64,
-    pub result: BlockResult,
 }
 
 impl Client {

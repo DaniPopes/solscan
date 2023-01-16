@@ -2,6 +2,9 @@
 //!
 //! Rust [Solscan](https://solscan.io) API client.
 
+#[macro_use]
+mod macros;
+
 mod response;
 use response::Response;
 pub use response::{ClientError, ResponseError, ResponseErrorMessage, Result};
@@ -87,7 +90,6 @@ fn concat_1(base_path: &str, value: &str) -> String {
     s
 }
 
-#[allow(dead_code)]
 mod serde_string {
     use serde::{Deserialize, Deserializer, Serializer};
     use std::{fmt::Display, str::FromStr};
@@ -109,7 +111,7 @@ mod serde_string {
         use super::*;
 
         pub fn serialize<T: ToString, S: Serializer>(
-            value: Option<T>,
+            value: &Option<T>,
             s: S,
         ) -> Result<S::Ok, S::Error> {
             if let Some(value) = value {

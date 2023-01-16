@@ -1,94 +1,91 @@
 //! Solscan API - Token section
 
 use crate::{Client, Result};
-use serde::Deserialize;
 use serde_json::Value;
 use solana_sdk::pubkey::Pubkey;
 use std::fmt;
 
-#[derive(Clone, Debug, Deserialize, Default)]
-pub struct TokenMeta {
-    pub symbol: String,
-    #[serde(with = "crate::serde_string")]
-    pub address: Pubkey,
-    pub name: String,
-    pub icon: String,
-    pub website: String,
-    pub twitter: String,
-    pub decimals: u64,
-    #[serde(rename = "coingeckoId")]
-    pub coingecko_id: String,
-    pub price: f32,
-    pub volume: u64,
-    #[serde(rename = "tokenAuthority", with = "crate::serde_string::option")]
-    pub token_authority: Option<Pubkey>,
-    pub supply: String,
-    pub r#type: String,
-}
+api_models! {
+    pub struct TokenMeta {
+        pub symbol: String,
+        #[serde(with = "crate::serde_string")]
+        pub address: Pubkey,
+        pub name: String,
+        pub icon: String,
+        pub website: String,
+        pub twitter: String,
+        pub decimals: u64,
+        pub coingecko_id: String,
+        pub price: f64,
+        pub volume: u64,
+        #[serde(with = "crate::serde_string::option")]
+        pub token_authority: Option<Pubkey>,
+        pub supply: String,
+        pub r#type: String,
+    }
 
-#[derive(Clone, Debug, Deserialize, Default)]
-pub struct TokenHolderData {
-    #[serde(with = "crate::serde_string")]
-    pub address: Pubkey,
-    pub amount: u64,
-    pub decimals: u64,
-    #[serde(with = "crate::serde_string")]
-    pub owner: Pubkey,
-    pub rank: u64,
-}
+    pub struct TokenHolderData {
+        #[serde(with = "crate::serde_string")]
+        pub address: Pubkey,
+        pub amount: u64,
+        pub decimals: u64,
+        #[serde(with = "crate::serde_string")]
+        pub owner: Pubkey,
+        pub rank: u64,
+    }
 
-// TODO: Missing values?
-#[derive(Clone, Debug, Deserialize, Default)]
-#[serde(rename_all = "camelCase", default)]
-pub struct TokenListInfo {
-    #[serde(alias = "priceUsdt")]
-    pub price_ust: u64,
-    pub tag: Vec<String>,
-    pub token_name: String,
-    pub token_symbol: String,
-    pub twitter: String,
-    pub website: String,
-    pub coin_gecko_info: Value,
-    pub sol_alpha_volume: f64,
-    pub _id: Option<Value>,
-    #[serde(with = "crate::serde_string")]
-    pub address: Pubkey,
-    pub created_at: String,
-    pub decimals: u64,
-    pub extensions: Value,
-    pub icon: String,
-    pub is_violate: bool,
-    pub market_cap_rank: u64,
-    #[serde(with = "crate::serde_string")]
-    pub mint_address: Pubkey,
-    pub symbol_has_lower: bool,
-    pub updated_at: String,
-    #[serde(alias = "holders")]
-    pub holder: u64,
-    #[serde(rename = "marketCapFD")]
-    pub market_cap_fd: f64,
-}
+    // TODO: Missing values?
+    pub struct TokenListInfo {
+        #[serde(alias = "priceUsdt")]
+        pub price_ust: u64,
+        pub tag: Vec<String>,
+        pub token_name: String,
+        pub token_symbol: String,
+        pub twitter: String,
+        pub website: String,
+        pub coin_gecko_info: Value,
+        pub sol_alpha_volume: f64,
+        pub _id: Option<Value>,
+        #[serde(with = "crate::serde_string")]
+        pub address: Pubkey,
+        pub created_at: String,
+        pub decimals: u64,
+        pub extensions: Value,
+        pub icon: String,
+        pub is_violate: bool,
+        pub market_cap_rank: u64,
+        #[serde(with = "crate::serde_string")]
+        pub mint_address: Pubkey,
+        pub symbol_has_lower: bool,
+        pub updated_at: String,
+        #[serde(alias = "holders")]
+        pub holder: u64,
+        #[serde(rename = "marketCapFD")]
+        pub market_cap_fd: f64,
+    }
 
-#[derive(Clone, Debug, Deserialize)]
-pub struct List<T> {
-    pub data: Vec<T>,
-    pub total: u64,
-}
+    pub struct List<T> {
+        /// The requested items.
+        pub data: Vec<T>,
+        /// Not the length of the request list, but the amount of all items.
+        pub total: u64,
+    }
 
-#[derive(Clone, Copy, Debug, Default)]
-pub enum SortBy {
-    #[default]
-    MarketCap,
-    Volume,
-    Holder,
-    Price,
-    PriceChange24h,
-    PriceChange7d,
-    PriceChange14d,
-    PriceChange30d,
-    PriceChange60d,
-    PriceChange200d,
-    PriceChange1y,
+    #[derive(Copy, PartialEq, Eq, PartialOrd, Ord)]
+    pub enum SortBy {
+        #[default]
+        MarketCap,
+        Volume,
+        Holder,
+        Price,
+        PriceChange24h,
+        PriceChange7d,
+        PriceChange14d,
+        PriceChange30d,
+        PriceChange60d,
+        PriceChange200d,
+        PriceChange1y,
+    }
 }
 
 impl Into<&'static str> for SortBy {
@@ -169,7 +166,7 @@ impl Client {
 
 #[cfg(test)]
 mod tests {
-    use crate::*;
+    use super::*;
 
     #[tokio::test]
     async fn test_token_holders() {

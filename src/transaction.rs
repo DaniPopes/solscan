@@ -1,99 +1,89 @@
 //! Solscan API - Transaction section
 
 use crate::{concat_1, Client, Result};
-use serde::Deserialize;
 use serde_json::Value;
 use solana_sdk::{hash::Hash, pubkey::Pubkey, signature::Signature};
 
 // TODO: fix some values
 
-#[derive(Clone, Debug, Deserialize, Default)]
-#[serde(rename_all = "camelCase", default)]
-pub struct TransactionMeta {
-    pub err: Option<Value>,
-    pub fee: Option<u64>,
-    pub inner_instructions: Vec<Value>,
-    pub log_messages: Vec<String>,
-    pub post_balances: Vec<u64>,
-    pub post_token_balances: Vec<u64>,
-    pub pre_balances: Vec<u64>,
-    pub pre_token_balances: Vec<u64>,
-    pub rewards: Option<Value>,
-    pub status: Option<Value>,
-}
+api_models! {
+    pub struct TransactionMeta {
+        pub err: Option<Value>,
+        pub fee: Option<u64>,
+        pub inner_instructions: Vec<Value>,
+        pub log_messages: Vec<String>,
+        pub post_balances: Vec<u64>,
+        pub post_token_balances: Vec<u64>,
+        pub pre_balances: Vec<u64>,
+        pub pre_token_balances: Vec<u64>,
+        pub rewards: Option<Value>,
+        pub status: Option<Value>,
+    }
 
-#[derive(Clone, Debug, Deserialize, Default)]
-pub struct TransactionInfo {
-    pub meta: TransactionMeta,
-    pub transaction: Transaction,
-    pub version: String,
-}
+    pub struct TransactionInfo {
+        pub meta: TransactionMeta,
+        pub transaction: Transaction,
+        pub version: String,
+    }
 
-#[derive(Clone, Debug, Deserialize, Default)]
-pub struct Transaction {
-    pub message: TransactionMessage,
-    #[serde(with = "crate::serde_string::vec")]
-    pub signatures: Vec<Signature>,
-}
+    pub struct Transaction {
+        pub message: TransactionMessage,
+        #[serde(with = "crate::serde_string::vec")]
+        pub signatures: Vec<Signature>,
+    }
 
-#[derive(Clone, Debug, Deserialize, Default)]
-#[serde(rename_all = "camelCase", default)]
-pub struct TransactionMessage {
-    pub account_keys: Vec<AccountKey>,
-    pub address_table_lookups: Option<Value>,
-    pub instructions: Vec<Value>,
-    pub recent_blockhash: Hash,
-}
+    pub struct TransactionMessage {
+        pub account_keys: Vec<AccountKey>,
+        pub address_table_lookups: Option<Value>,
+        pub instructions: Vec<Value>,
+        pub recent_blockhash: Hash,
+    }
 
-#[derive(Clone, Debug, Deserialize, Default)]
-pub struct AccountKey {
-    #[serde(with = "crate::serde_string")]
-    pub pubkey: Pubkey,
-    pub signer: bool,
-    pub source: String,
-    pub writable: bool,
-}
+    pub struct AccountKey {
+        #[serde(with = "crate::serde_string")]
+        pub pubkey: Pubkey,
+        pub signer: bool,
+        pub source: String,
+        pub writable: bool,
+    }
 
-#[derive(Clone, Debug, Deserialize, Default)]
-#[serde(rename_all = "camelCase", default)]
-pub struct Transaction2 {
-    pub block_time: u64,
-    pub slot: u64,
-    #[serde(with = "crate::serde_string")]
-    pub tx_hash: Hash,
-    pub fee: u64,
-    pub status: String,
-    #[serde(alias = "signer", with = "crate::serde_string::vec")]
-    pub signers: Vec<Pubkey>,
-    #[serde(alias = "logMessage")]
-    pub log_messages: Vec<String>,
-    #[serde(alias = "inputAccount")]
-    pub input_accounts: Vec<InputAccount>,
-    #[serde(with = "crate::serde_string")]
-    pub recent_blockhash: Hash,
-    pub confirmations: Option<u64>,
-    #[serde(alias = "innerInstruction")]
-    pub inner_instructions: Vec<Value>,
-    #[serde(alias = "token_balanes")] // yes typo
-    pub token_balances: Vec<Value>,
-    #[serde(alias = "parsedInstruction")]
-    pub parsed_instructions: Vec<Value>,
-    pub token_transfers: Vec<Value>,
-    pub sol_transfers: Vec<Value>,
-    pub serum_transactions: Vec<Value>,
-    pub raydium_transactions: Vec<Value>,
-    pub unknown_transfers: Vec<Value>,
-}
+    pub struct Transaction2 {
+        pub block_time: u64,
+        pub slot: u64,
+        #[serde(with = "crate::serde_string")]
+        pub tx_hash: Hash,
+        pub fee: u64,
+        pub status: String,
+        #[serde(alias = "signer", with = "crate::serde_string::vec")]
+        pub signers: Vec<Pubkey>,
+        #[serde(alias = "logMessage")]
+        pub log_messages: Vec<String>,
+        #[serde(alias = "inputAccount")]
+        pub input_accounts: Vec<InputAccount>,
+        #[serde(with = "crate::serde_string")]
+        pub recent_blockhash: Hash,
+        pub confirmations: Option<u64>,
+        #[serde(alias = "innerInstruction")]
+        pub inner_instructions: Vec<Value>,
+        #[serde(alias = "token_balanes")] // yes typo
+        pub token_balances: Vec<Value>,
+        #[serde(alias = "parsedInstruction")]
+        pub parsed_instructions: Vec<Value>,
+        pub token_transfers: Vec<Value>,
+        pub sol_transfers: Vec<Value>,
+        pub serum_transactions: Vec<Value>,
+        pub raydium_transactions: Vec<Value>,
+        pub unknown_transfers: Vec<Value>,
+    }
 
-#[derive(Clone, Debug, Deserialize, Default)]
-#[serde(rename_all = "camelCase")]
-pub struct InputAccount {
-    #[serde(with = "crate::serde_string")]
-    pub account: Pubkey,
-    pub signer: bool,
-    pub writable: bool,
-    pub pre_balance: u64,
-    pub post_balance: u64,
+    pub struct InputAccount {
+        #[serde(with = "crate::serde_string")]
+        pub account: Pubkey,
+        pub signer: bool,
+        pub writable: bool,
+        pub pre_balance: u64,
+        pub post_balance: u64,
+    }
 }
 
 impl Client {
@@ -110,7 +100,7 @@ impl Client {
 
 #[cfg(test)]
 mod tests {
-    use crate::*;
+    use super::*;
 
     #[tokio::test]
     #[ignore = "unreliable: empty"]

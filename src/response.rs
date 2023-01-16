@@ -1,6 +1,5 @@
 //! Solscan API response
 
-use serde::Deserialize;
 use serde_json::Value;
 use thiserror::Error;
 
@@ -10,7 +9,7 @@ pub type Result<T = ()> = std::result::Result<T, ClientError>;
 /// A Solscan error.
 #[derive(Debug, Error)]
 pub enum ClientError {
-    #[error(transparent)]
+    #[error("Solscan error {}: {}", _0.status, _0.error.message)]
     Response(ResponseError),
 
     #[error("Received an empty response")]
@@ -26,25 +25,24 @@ pub enum ClientError {
     Url(#[from] url::ParseError),
 }
 
-#[derive(Clone, Debug, Deserialize, Error)]
-#[error("{message}")]
-pub struct ResponseErrorMessage {
-    pub message: String,
-}
+api_models! {
+    pub struct ResponseErrorMessage {
+        pub message: String,
+    }
 
-#[derive(Clone, Debug, Deserialize, Error)]
-#[error("Solscan error {status}: {error}")]
-pub struct ResponseError {
-    pub status: i32,
-    pub error: ResponseErrorMessage,
-}
+    pub struct ResponseError {
+        pub status: i32,
+        pub error: ResponseErrorMessage,
+    }
 
-#[derive(Clone, Debug, Deserialize)]
-#[serde(untagged)]
-pub(super) enum Response<T> {
-    Ok(T),
-    Err(ResponseError),
-    Unknown(Value),
+    #[serde(untagged)]
+    pub(crate) enum Response<T> {
+        Ok(T),
+        Err(ResponseError),
+        Unknown(Value),
+        #[default]
+        Fallback
+    }
 }
 
 impl<T> Response<T> {
@@ -58,6 +56,7 @@ impl<T> Response<T> {
                 Value::String(ref s) if s.is_empty() => Err(ClientError::EmptyResponse),
                 _ => Err(ClientError::UnknownResponse(value)),
             },
+            _ => Err(ClientError::EmptyResponse),
         }
     }
 }

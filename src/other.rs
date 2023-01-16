@@ -1,24 +1,21 @@
 //! Solscan API - Market, Chain information and Tools sections
 
 use crate::{concat_1, Client, Result};
-use serde::Deserialize;
 use serde_json::Value;
 use solana_sdk::pubkey::Pubkey;
 
-#[derive(Clone, Debug, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct TokenMarketInfo {
-    pub price_usdt: f32,
-    pub volume_usdt: u64,
-}
+api_models! {
+    pub struct TokenMarketInfo {
+        pub price_usdt: f64,
+        pub volume_usdt: u64,
+    }
 
-#[derive(Clone, Debug, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct ChainInfo {
-    pub block_height: u64,
-    pub current_epoch: u64,
-    pub absolute_slot: u64,
-    pub transaction_count: u64,
+    pub struct ChainInfo {
+        pub block_height: u64,
+        pub current_epoch: u64,
+        pub absolute_slot: u64,
+        pub transaction_count: u64,
+    }
 }
 
 impl Client {
