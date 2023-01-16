@@ -1,8 +1,7 @@
 //! Token section.
 
-use crate::{Client, Result};
+use crate::{solana::Pubkey, Client, Result};
 use serde_json::Value;
-use solana_sdk::pubkey::Pubkey;
 use std::fmt;
 
 api_models! {

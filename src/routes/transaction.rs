@@ -1,8 +1,11 @@
 //! Transaction section.
 
-use crate::{concat_1, Client, Result};
+use crate::{
+    concat_1,
+    solana::{Hash, Pubkey, Signature},
+    Client, Result,
+};
 use serde_json::Value;
-use solana_sdk::{hash::Hash, pubkey::Pubkey, signature::Signature};
 
 // TODO: fix some values
 
@@ -116,6 +119,6 @@ mod tests {
         let client = Client::new();
         let s = "5YdxDGc9Ki1iAPfNwX4JjGShXUQ7YMd85zEygZdVhk1p8WtnfEdGyJ9cnVVuYLULYrVD6ogdHsy3eNdL9viM5hS6";
         let res = client.transaction(&s.parse().unwrap()).await.unwrap();
-        assert_eq!(res.tx_hash, s.parse().unwrap());
+        assert_eq!(res.tx_hash, s.parse::<Hash>().unwrap());
     }
 }

@@ -1,7 +1,6 @@
 //! Account section.
 
-use crate::{concat_1, Client, Result};
-use solana_sdk::pubkey::Pubkey;
+use crate::{concat_1, solana::Pubkey, Client, Result};
 
 // TODO: remaining routes
 
@@ -17,7 +16,8 @@ api_models! {
     }
 }
 
-impl From<Account> for solana_sdk::account::Account {
+#[cfg(feature = "sdk")]
+impl From<Account> for crate::solana::Account {
     fn from(value: Account) -> Self {
         let Account { lamports, owner_program, rent_epoch, .. } = value;
         Self { lamports, data: vec![], owner: owner_program, executable: false, rent_epoch }

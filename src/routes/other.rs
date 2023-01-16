@@ -1,8 +1,7 @@
 //! Market, chain information and tools sections.
 
-use crate::{concat_1, Client, Result};
+use crate::{concat_1, solana::Pubkey, Client, Result};
 use serde_json::Value;
-use solana_sdk::pubkey::Pubkey;
 
 api_models! {
     pub struct TokenMarketInfo {

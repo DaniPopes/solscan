@@ -1,9 +1,9 @@
 //! Block section.
 
 use crate::{
-    concat_1, Client, ClientError, ResponseError, ResponseErrorMessage, Result, TransactionInfo,
+    concat_1, solana::Hash, Client, ClientError, ResponseError, ResponseErrorMessage, Result,
+    TransactionInfo,
 };
-use solana_sdk::hash::Hash;
 
 api_models! {
     pub struct BlockInfo {

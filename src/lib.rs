@@ -5,7 +5,14 @@
 #[macro_use]
 mod macros;
 
+#[cfg(feature = "sdk")]
+#[path = "serde_string_sdk.rs"]
 mod serde_string;
+
+#[cfg(not(feature = "sdk"))]
+mod serde_string;
+
+mod solana;
 
 mod response;
 use response::Response;
@@ -72,7 +79,7 @@ impl Client {
     }
 }
 
-#[inline(always)]
+#[inline]
 fn concat_1(base_path: &str, value: &str) -> String {
     let mut s = String::with_capacity(base_path.len() + value.len());
     s.push_str(base_path);
