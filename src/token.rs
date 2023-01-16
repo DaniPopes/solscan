@@ -71,7 +71,7 @@ api_models! {
         pub total: u64,
     }
 
-    #[derive(Copy, PartialEq, Eq, PartialOrd, Ord)]
+    #[derive(Copy, Eq, PartialOrd, Ord)]
     pub enum SortBy {
         #[default]
         MarketCap,
