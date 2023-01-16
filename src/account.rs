@@ -1,6 +1,6 @@
 //! Solscan API - Account section
 
-use super::{make_path1, Client, Result};
+use super::{concat_1, Client, Result};
 use serde::Deserialize;
 use solana_sdk::pubkey::Pubkey;
 
@@ -28,7 +28,7 @@ impl From<Account> for solana_sdk::account::Account {
 impl Client {
     /// Performs an HTTP `GET` request to the `/account/{account}` path.
     pub async fn account(&self, account: &Pubkey) -> Result<Account> {
-        self.get(&make_path1("account/", &account.to_string()), &()).await
+        self.get(&concat_1("account/", &account.to_string()), &()).await
     }
 }
 

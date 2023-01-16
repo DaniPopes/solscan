@@ -1,6 +1,6 @@
 //! Solscan API - Market, Chain information and Tools sections
 
-use super::{make_path1, Client, Result};
+use super::{concat_1, Client, Result};
 use serde::Deserialize;
 use serde_json::Value;
 use solana_sdk::pubkey::Pubkey;
@@ -24,7 +24,7 @@ pub struct ChainInfo {
 impl Client {
     /// Performs an HTTP `GET` request to the `/market/token/{token}` path.
     pub async fn market(&self, token: &Pubkey) -> Result<TokenMarketInfo> {
-        self.get_no_query(&make_path1("market/token/", &token.to_string())).await
+        self.get_no_query(&concat_1("market/token/", &token.to_string())).await
     }
 
     /// Performs an HTTP `GET` request to the `/chaininfo` path.

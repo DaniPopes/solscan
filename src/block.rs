@@ -1,7 +1,7 @@
 //! Solscan API - Block section
 
 use super::{
-    make_path1, Client, ClientError, ResponseError, ResponseErrorMessage, Result, TransactionInfo,
+    concat_1, Client, ClientError, ResponseError, ResponseErrorMessage, Result, TransactionInfo,
 };
 use serde::Deserialize;
 use solana_sdk::hash::Hash;
@@ -74,7 +74,7 @@ impl Client {
 
     /// Performs an HTTP `GET` request to the `/block/{block}` path.
     pub async fn block(&self, block: u64) -> Result<Block> {
-        self.get_no_query(&make_path1("block/", &block.to_string())).await
+        self.get_no_query(&concat_1("block/", &block.to_string())).await
     }
 }
 

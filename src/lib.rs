@@ -80,7 +80,7 @@ impl Client {
 }
 
 #[inline(always)]
-fn make_path1(base_path: &'static str, value: &str) -> String {
+fn concat_1(base_path: &str, value: &str) -> String {
     let mut s = String::with_capacity(base_path.len() + value.len());
     s.push_str(base_path);
     s.push_str(value);

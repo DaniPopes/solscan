@@ -1,6 +1,6 @@
 //! Solscan API - Transaction section
 
-use super::{make_path1, Client, Result};
+use super::{concat_1, Client, Result};
 use serde::Deserialize;
 use serde_json::Value;
 use solana_sdk::{hash::Hash, pubkey::Pubkey, signature::Signature};
@@ -104,7 +104,7 @@ impl Client {
 
     /// Performs an HTTP `GET` request to the `/transaction/{signature}` path.
     pub async fn transaction(&self, signature: &Signature) -> Result<Transaction2> {
-        self.get_no_query(dbg!(&make_path1("transaction/", &signature.to_string()))).await
+        self.get_no_query(dbg!(&concat_1("transaction/", &signature.to_string()))).await
     }
 }
 
