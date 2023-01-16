@@ -1,6 +1,6 @@
 //! Solscan API - Token section
 
-use super::{Client, Result};
+use crate::{Client, Result};
 use serde::Deserialize;
 use serde_json::Value;
 use solana_sdk::pubkey::Pubkey;
@@ -9,7 +9,7 @@ use std::fmt;
 #[derive(Clone, Debug, Deserialize, Default)]
 pub struct TokenMeta {
     pub symbol: String,
-    #[serde(with = "super::serde_string")]
+    #[serde(with = "crate::serde_string")]
     pub address: Pubkey,
     pub name: String,
     pub icon: String,
@@ -20,7 +20,7 @@ pub struct TokenMeta {
     pub coingecko_id: String,
     pub price: f32,
     pub volume: u64,
-    #[serde(rename = "tokenAuthority", with = "super::serde_string::option")]
+    #[serde(rename = "tokenAuthority", with = "crate::serde_string::option")]
     pub token_authority: Option<Pubkey>,
     pub supply: String,
     pub r#type: String,
@@ -28,11 +28,11 @@ pub struct TokenMeta {
 
 #[derive(Clone, Debug, Deserialize, Default)]
 pub struct TokenHolderData {
-    #[serde(with = "super::serde_string")]
+    #[serde(with = "crate::serde_string")]
     pub address: Pubkey,
     pub amount: u64,
     pub decimals: u64,
-    #[serde(with = "super::serde_string")]
+    #[serde(with = "crate::serde_string")]
     pub owner: Pubkey,
     pub rank: u64,
 }
@@ -51,7 +51,7 @@ pub struct TokenListInfo {
     pub coin_gecko_info: Value,
     pub sol_alpha_volume: f64,
     pub _id: Option<Value>,
-    #[serde(with = "super::serde_string")]
+    #[serde(with = "crate::serde_string")]
     pub address: Pubkey,
     pub created_at: String,
     pub decimals: u64,
@@ -59,7 +59,7 @@ pub struct TokenListInfo {
     pub icon: String,
     pub is_violate: bool,
     pub market_cap_rank: u64,
-    #[serde(with = "super::serde_string")]
+    #[serde(with = "crate::serde_string")]
     pub mint_address: Pubkey,
     pub symbol_has_lower: bool,
     pub updated_at: String,
@@ -169,7 +169,7 @@ impl Client {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use crate::*;
 
     #[tokio::test]
     async fn test_token_holders() {

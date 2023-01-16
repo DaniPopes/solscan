@@ -1,6 +1,6 @@
 //! Solscan API - Transaction section
 
-use super::{concat_1, Client, Result};
+use crate::{concat_1, Client, Result};
 use serde::Deserialize;
 use serde_json::Value;
 use solana_sdk::{hash::Hash, pubkey::Pubkey, signature::Signature};
@@ -32,7 +32,7 @@ pub struct TransactionInfo {
 #[derive(Clone, Debug, Deserialize, Default)]
 pub struct Transaction {
     pub message: TransactionMessage,
-    #[serde(with = "super::serde_string::vec")]
+    #[serde(with = "crate::serde_string::vec")]
     pub signatures: Vec<Signature>,
 }
 
@@ -47,7 +47,7 @@ pub struct TransactionMessage {
 
 #[derive(Clone, Debug, Deserialize, Default)]
 pub struct AccountKey {
-    #[serde(with = "super::serde_string")]
+    #[serde(with = "crate::serde_string")]
     pub pubkey: Pubkey,
     pub signer: bool,
     pub source: String,
@@ -59,17 +59,17 @@ pub struct AccountKey {
 pub struct Transaction2 {
     pub block_time: u64,
     pub slot: u64,
-    #[serde(with = "super::serde_string")]
+    #[serde(with = "crate::serde_string")]
     pub tx_hash: Hash,
     pub fee: u64,
     pub status: String,
-    #[serde(alias = "signer", with = "super::serde_string::vec")]
+    #[serde(alias = "signer", with = "crate::serde_string::vec")]
     pub signers: Vec<Pubkey>,
     #[serde(alias = "logMessage")]
     pub log_messages: Vec<String>,
     #[serde(alias = "inputAccount")]
     pub input_accounts: Vec<InputAccount>,
-    #[serde(with = "super::serde_string")]
+    #[serde(with = "crate::serde_string")]
     pub recent_blockhash: Hash,
     pub confirmations: Option<u64>,
     #[serde(alias = "innerInstruction")]
@@ -88,7 +88,7 @@ pub struct Transaction2 {
 #[derive(Clone, Debug, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct InputAccount {
-    #[serde(with = "super::serde_string")]
+    #[serde(with = "crate::serde_string")]
     pub account: Pubkey,
     pub signer: bool,
     pub writable: bool,
@@ -110,7 +110,7 @@ impl Client {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use crate::*;
 
     #[tokio::test]
     #[ignore = "unreliable: empty"]

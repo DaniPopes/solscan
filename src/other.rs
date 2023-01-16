@@ -1,6 +1,6 @@
 //! Solscan API - Market, Chain information and Tools sections
 
-use super::{concat_1, Client, Result};
+use crate::{concat_1, Client, Result};
 use serde::Deserialize;
 use serde_json::Value;
 use solana_sdk::pubkey::Pubkey;
@@ -41,7 +41,7 @@ impl Client {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use crate::*;
 
     #[tokio::test]
     async fn test_market() {
@@ -63,7 +63,7 @@ mod tests {
     async fn test_tools_inspect() {
         let client = Client::new();
         let err = client.tools_inspect(String::new()).await.unwrap();
-        let err: super::super::ResponseError = serde_json::from_value(err).unwrap();
+        let err: crate::crate::ResponseError = serde_json::from_value(err).unwrap();
         assert_eq!(err.status, 500);
     }
 }

@@ -1,6 +1,6 @@
 //! Solscan API - Account section
 
-use super::{concat_1, Client, Result};
+use crate::{concat_1, Client, Result};
 use serde::Deserialize;
 use solana_sdk::pubkey::Pubkey;
 
@@ -10,11 +10,11 @@ use solana_sdk::pubkey::Pubkey;
 #[serde(rename_all = "camelCase")]
 pub struct Account {
     pub lamports: u64,
-    #[serde(with = "super::serde_string")]
+    #[serde(with = "crate::serde_string")]
     pub owner_program: Pubkey,
     pub r#type: String,
     pub rent_epoch: u64,
-    #[serde(with = "super::serde_string")]
+    #[serde(with = "crate::serde_string")]
     pub account: Pubkey,
 }
 
@@ -34,7 +34,7 @@ impl Client {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use crate::*;
 
     #[tokio::test]
     async fn test_account() {
