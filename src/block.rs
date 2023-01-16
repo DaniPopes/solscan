@@ -11,13 +11,14 @@ api_models! {
         pub block_time: Option<u64>,
         #[serde(with = "crate::serde_string")]
         pub blockhash: Hash,
+        pub fee_rewards: u64,
         pub parent_slot: u64,
         #[serde(with = "crate::serde_string")]
         pub previous_blockhash: Hash,
-        pub fee_rewards: u64,
         pub transaction_count: u64,
     }
 
+    #[serde(untagged)]
     pub enum BlockResult {
         Ok(BlockInfo),
         Err { code: i32, message: String },
