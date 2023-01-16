@@ -19,6 +19,18 @@ jobs:
             - name: test
               run: cargo test --workspace --all-features
 
+    features:
+        name: features
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - uses: dtolnay/rust-toolchain@nightly
+            - uses: Swatinem/rust-cache@v2
+            - uses: taiki-e/install-action@cargo-hack
+            - name: check --feature-powerset
+              run:
+                  cargo hack check --all --feature-powerset --depth 2 -Z avoid-dev-deps --keep-going
+
     clippy:
         name: clippy
         runs-on: ubuntu-latest
