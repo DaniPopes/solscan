@@ -147,7 +147,7 @@ mod serde_string {
         use serde::ser::SerializeSeq;
 
         pub fn serialize<T: ToString, S: Serializer>(
-            value: Vec<T>,
+            value: &Vec<T>,
             s: S,
         ) -> Result<S::Ok, S::Error> {
             let mut seq = s.serialize_seq(Some(value.len()))?;
