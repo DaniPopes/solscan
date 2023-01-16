@@ -37,8 +37,8 @@ api_models! {
 
     #[serde(untagged)]
     pub(crate) enum Response<T> {
-        Ok(T),
         Err(ResponseError),
+        Ok(T),
         Unknown(Value),
         #[default]
         Fallback
@@ -48,8 +48,8 @@ api_models! {
 impl<T> Response<T> {
     pub fn result(self) -> Result<T> {
         match self {
-            Self::Ok(x) => Ok(x),
             Self::Err(e) => Err(ClientError::Response(e)),
+            Self::Ok(x) => Ok(x),
             Self::Unknown(value) => match value {
                 Value::Array(ref arr) if arr.is_empty() => Err(ClientError::EmptyResponse),
                 Value::Object(ref obj) if obj.is_empty() => Err(ClientError::EmptyResponse),
