@@ -1,0 +1,7 @@
+use_small_heuristics = "Max"
+use_field_init_shorthand = true
+
+# unstable
+imports_granularity = "Crate"
+wrap_comments = true
+comment_width = 100

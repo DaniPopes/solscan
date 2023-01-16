@@ -1,0 +1,28 @@
+[package]
+name = "solscan"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.62"
+authors = ["DaniPopes <danipopes1@proton.me>"]
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/danipopes/solscan"
+homepage = "https://docs.rs/solscan"
+description = "A Rust Solscan HTTP API client"
+categories = ["api-bindings", "cryptography::cryptocurrencies"]
+keywords = ["solana", "sol", "api", "blockchain", "crypto"]
+exclude = [".github/"]
+
+[dependencies]
+solana-sdk = "1.14"
+
+serde = "1"
+serde_json = "1"
+
+reqwest = { version = "0.11", default-features = false, features = ["json"] }
+url = "2.3"
+thiserror = "1.0"
+
+[dev-dependencies]
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+reqwest = { version = "0.11", features = ["json", "rustls-tls"] }
