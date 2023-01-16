@@ -1,4 +1,4 @@
-//! Solscan API - Token section
+//! Token section.
 
 use crate::{Client, Result};
 use serde_json::Value;
@@ -45,6 +45,7 @@ api_models! {
         pub website: String,
         pub coin_gecko_info: Value,
         pub sol_alpha_volume: f64,
+        #[serde(default)]
         pub _id: Option<Value>,
         #[serde(with = "crate::serde_string")]
         pub address: Pubkey,
@@ -70,22 +71,22 @@ api_models! {
         /// Not the length of the request list, but the amount of all items.
         pub total: u64,
     }
+}
 
-    #[derive(Copy, Eq, PartialOrd, Ord)]
-    pub enum SortBy {
-        #[default]
-        MarketCap,
-        Volume,
-        Holder,
-        Price,
-        PriceChange24h,
-        PriceChange7d,
-        PriceChange14d,
-        PriceChange30d,
-        PriceChange60d,
-        PriceChange200d,
-        PriceChange1y,
-    }
+#[derive(Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord)]
+pub enum SortBy {
+    #[default]
+    MarketCap,
+    Volume,
+    Holder,
+    Price,
+    PriceChange24h,
+    PriceChange7d,
+    PriceChange14d,
+    PriceChange30d,
+    PriceChange60d,
+    PriceChange200d,
+    PriceChange1y,
 }
 
 impl Into<&'static str> for SortBy {

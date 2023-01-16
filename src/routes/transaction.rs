@@ -1,4 +1,4 @@
-//! Solscan API - Transaction section
+//! Transaction section.
 
 use crate::{concat_1, Client, Result};
 use serde_json::Value;

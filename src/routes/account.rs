@@ -1,4 +1,4 @@
-//! Solscan API - Account section
+//! Account section.
 
 use crate::{concat_1, Client, Result};
 use solana_sdk::pubkey::Pubkey;

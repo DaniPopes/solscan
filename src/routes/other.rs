@@ -1,4 +1,4 @@
-//! Solscan API - Market, Chain information and Tools sections
+//! Market, chain information and tools sections.
 
 use crate::{concat_1, Client, Result};
 use serde_json::Value;

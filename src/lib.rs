@@ -9,20 +9,8 @@ mod response;
 use response::Response;
 pub use response::{ClientError, ResponseError, ResponseErrorMessage, Result};
 
-mod block;
-pub use block::*;
-
-mod transaction;
-pub use transaction::*;
-
-mod account;
-pub use account::*;
-
-mod token;
-pub use token::*;
-
-mod other;
-pub use other::*;
+mod routes;
+pub use routes::*;
 
 use reqwest::{header, Client as RClient, RequestBuilder};
 use serde::{de::DeserializeOwned, Serialize};

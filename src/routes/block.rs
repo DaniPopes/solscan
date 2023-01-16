@@ -1,4 +1,4 @@
-//! Solscan API - Block section
+//! Block section.
 
 use crate::{
     concat_1, Client, ClientError, ResponseError, ResponseErrorMessage, Result, TransactionInfo,
