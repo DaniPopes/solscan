@@ -1,10 +1,16 @@
 //! Token section.
 
 use crate::{solana::Pubkey, Client, Result};
-use serde_json::Value;
-use std::fmt;
+use std::{collections::HashMap, fmt};
 
 api_models! {
+    pub struct TokenList<T> {
+        /// The requested items.
+        pub data: Vec<T>,
+        /// Not the length of the request list, but the amount of all items.
+        pub total: u64,
+    }
+
     pub struct TokenMeta {
         pub symbol: String,
         #[serde(with = "crate::serde_string")]
@@ -33,42 +39,69 @@ api_models! {
         pub rank: u64,
     }
 
-    // TODO: Missing values?
     pub struct TokenListInfo {
-        #[serde(alias = "priceUsdt")]
-        pub price_ust: u64,
-        pub tag: Vec<String>,
+        pub price_ust: f64,
+        #[serde(default)]
+        pub tag: Option<Vec<String>>,
         pub token_name: String,
         pub token_symbol: String,
         pub twitter: String,
         pub website: String,
-        pub coin_gecko_info: Value,
-        pub sol_alpha_volume: f64,
-        #[serde(default)]
-        pub _id: Option<Value>,
+        pub coingecko_info: CoingeckoInfo,
+        pub sol_alpha_volume: Option<f64>,
+        #[serde(rename = "_id")]
+        pub id: String,
         #[serde(with = "crate::serde_string")]
         pub address: Pubkey,
         pub created_at: String,
         pub decimals: u64,
-        pub extensions: Value,
+        /// Any metadata extension. Should always contain `"coingeckoId"`.
+        pub extensions: HashMap<String, String>,
         pub icon: String,
         pub is_violate: bool,
         pub market_cap_rank: u64,
-        #[serde(with = "crate::serde_string")]
-        pub mint_address: Pubkey,
+        pub mint_address: String,
         pub symbol_has_lower: bool,
         pub updated_at: String,
-        #[serde(alias = "holders")]
         pub holder: u64,
         #[serde(rename = "marketCapFD")]
-        pub market_cap_fd: f64,
+        pub market_cap_fd: Option<f64>,
     }
 
-    pub struct List<T> {
-        /// The requested items.
-        pub data: Vec<T>,
-        /// Not the length of the request list, but the amount of all items.
-        pub total: u64,
+    pub struct CoingeckoInfo {
+        pub coingecko_rank: Option<u64>,
+        pub market_cap_rank: Option<u64>,
+        pub market_data: CoingeckoMarketData,
+    }
+
+    pub struct CoingeckoMarketData {
+        pub current_price: f64,
+        pub ath: f64,
+        pub ath_change_percentage: f64,
+        pub ath_date: String,
+        pub atl: f64,
+        pub atl_change_percentage: f64,
+        pub atl_date: String,
+        pub market_cap: f64,
+        pub market_cap_rank: Option<u64>,
+        pub fully_diluted_valuation: Option<f64>,
+        pub total_volume: Option<f64>,
+        pub price_high24h: Option<f64>,
+        pub price_low24h: Option<f64>,
+        pub price_change24h: Option<f64>,
+        pub price_change_percentage24h: Option<f64>,
+        pub price_change_percentage7d: Option<f64>,
+        pub price_change_percentage14d: Option<f64>,
+        pub price_change_percentage30d: Option<f64>,
+        pub price_change_percentage60d: Option<f64>,
+        pub price_change_percentage200d: Option<f64>,
+        pub price_change_percentage1y: Option<f64>,
+        pub market_cap_change24h: Option<f64>,
+        pub market_cap_change_percentage24h: Option<f64>,
+        pub total_supply: Option<f64>,
+        pub max_supply: Option<f64>,
+        pub circulating_supply: Option<f64>,
+        pub last_updated: String,
     }
 }
 
@@ -126,7 +159,7 @@ impl Client {
         token_address: &Pubkey,
         limit: Option<u64>,
         offset: Option<u64>,
-    ) -> Result<List<TokenHolderData>> {
+    ) -> Result<TokenList<TokenHolderData>> {
         self.get(
             "token/holders",
             &[
@@ -150,7 +183,7 @@ impl Client {
         descending: bool,
         limit: Option<u64>,
         offset: Option<u64>,
-    ) -> Result<List<TokenListInfo>> {
+    ) -> Result<TokenList<TokenListInfo>> {
         self.get(
             "token/list",
             &[
@@ -188,11 +221,10 @@ mod tests {
     }
 
     #[tokio::test]
-    #[ignore = "idk: missing values"]
     async fn test_token_list() {
         let client = Client::new();
-        let res = client.token_list(None, true, Some(5), None).await.unwrap();
-        assert_eq!(res.data.len(), 5);
+        let res = client.token_list(None, true, Some(100), None).await.unwrap();
+        assert_eq!(res.data.len(), 100);
         assert!(res.total > 1000);
     }
 }
