@@ -9,32 +9,25 @@ use crate::{
 // TODO: remaining routes
 
 api_models! {
-    pub struct Account {
-        pub lamports: u64,
+    pub struct AccountToken {
         #[serde(with = "crate::serde_string")]
-        pub owner_program: Pubkey,
-        pub r#type: String,
+        pub token_address: Pubkey,
+        pub token_amount: TokenAmount,
+        #[serde(with = "crate::serde_string")]
+        pub token_account: Pubkey,
+        pub token_name: String,
+        pub token_icon: String,
         pub rent_epoch: u64,
-        #[serde(with = "crate::serde_string")]
-        pub account: Pubkey,
+        pub lamports: u64,
+        pub token_symbol: Option<String>,
     }
 
-    // pub struct AccountTransaction {
-    //     pub block_time: i64,
-    //     pub fee: i64,
-    //     pub lamport: i64,
-    //     pub parsed_instruction: Vec<ParsedInstruction>,
-    //     pub signer: Vec<String>,
-    //     pub slot: i64,
-    //     pub status: String,
-    //     pub tx_hash: String,
-    // }
-
-    // pub struct ParsedInstruction {
-    //     pub program_id: String,
-    //     #[serde(rename = "type")]
-    //     pub type_field: String,
-    // }
+    pub struct TokenAmount {
+        pub amount: String,
+        pub decimals: u64,
+        pub ui_amount: f64,
+        pub ui_amount_string: String,
+    }
 
     pub struct AccountTransaction {
         pub block_time: u64,
@@ -54,6 +47,16 @@ api_models! {
         pub program_id: Pubkey,
         pub r#type: String,
     }
+
+    pub struct Account {
+        pub lamports: u64,
+        #[serde(with = "crate::serde_string")]
+        pub owner_program: Pubkey,
+        pub r#type: String,
+        pub rent_epoch: u64,
+        #[serde(with = "crate::serde_string")]
+        pub account: Pubkey,
+    }
 }
 
 #[cfg(feature = "sdk")]
@@ -65,6 +68,11 @@ impl From<Account> for crate::solana::Account {
 }
 
 impl Client {
+    /// Performs an HTTP `GET` request to the `/account/tokens` path.
+    pub async fn account_tokens(&self, account: &Pubkey) -> Result<Vec<AccountToken>> {
+        self.get("account/tokens", &[("account", account.to_string())]).await
+    }
+
     /// Performs an HTTP `GET` request to the `/account/transactions` path.
     pub async fn account_transactions(
         &self,
@@ -94,6 +102,14 @@ mod tests {
     use super::*;
 
     static ACCOUNT: &str = "3SKLz31aEBqQQYeiGaezGP7v7ZEJvAmSGwBqU1zLJkgn";
+
+    #[tokio::test]
+    async fn test_account_tokens() {
+        let client = Client::new();
+        let account = ACCOUNT.parse().unwrap();
+        let res = client.account_tokens(&account).await.unwrap();
+        assert!(!res.is_empty());
+    }
 
     #[tokio::test]
     async fn test_account_transactions() {
