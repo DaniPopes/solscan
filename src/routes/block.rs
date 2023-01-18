@@ -93,7 +93,6 @@ mod tests {
     }
 
     #[tokio::test]
-    #[ignore = "idk: missing values"]
     async fn test_block_transactions() {
         let client = Client::new();
         let res = client.block_transactions(1, None, None).await.unwrap();

@@ -10,6 +10,14 @@ use serde_json::Value;
 // TODO: fix some values
 
 api_models! {
+    pub struct TransactionInfo {
+        #[serde(default)]
+        pub meta: Option<TransactionMeta>,
+        pub transaction: Transaction,
+        #[serde(default)]
+        pub version: Option<String>,
+    }
+
     pub struct TransactionMeta {
         pub err: Option<Value>,
         pub fee: Option<u64>,
@@ -23,12 +31,6 @@ api_models! {
         pub status: Option<Value>,
     }
 
-    pub struct TransactionInfo {
-        pub meta: TransactionMeta,
-        pub transaction: Transaction,
-        pub version: String,
-    }
-
     pub struct Transaction {
         pub message: TransactionMessage,
         #[serde(with = "crate::serde_string::vec")]
@@ -36,13 +38,14 @@ api_models! {
     }
 
     pub struct TransactionMessage {
-        pub account_keys: Vec<AccountKey>,
+        pub account_keys: Vec<TransactionAccountKey>,
         pub address_table_lookups: Option<Value>,
         pub instructions: Vec<Value>,
+        #[serde(with = "crate::serde_string")]
         pub recent_blockhash: Hash,
     }
 
-    pub struct AccountKey {
+    pub struct TransactionAccountKey {
         #[serde(with = "crate::serde_string")]
         pub pubkey: Pubkey,
         pub signer: bool,
@@ -50,28 +53,31 @@ api_models! {
         pub writable: bool,
     }
 
-    pub struct Transaction2 {
+    // So many typos
+    pub struct GetTransactionInfo {
         pub block_time: u64,
         pub slot: u64,
         #[serde(with = "crate::serde_string")]
-        pub tx_hash: Hash,
+        pub tx_hash: Signature,
         pub fee: u64,
         pub status: String,
-        #[serde(alias = "signer", with = "crate::serde_string::vec")]
+        #[serde(rename = "lamport")]
+        pub lamports: u64,
+        #[serde(rename = "signer", with = "crate::serde_string::vec")]
         pub signers: Vec<Pubkey>,
-        #[serde(alias = "logMessage")]
+        #[serde(rename = "logMessage")]
         pub log_messages: Vec<String>,
-        #[serde(alias = "inputAccount")]
-        pub input_accounts: Vec<InputAccount>,
+        #[serde(rename = "inputAccount")]
+        pub input_accounts: Vec<TransactionInputAccount>,
         #[serde(with = "crate::serde_string")]
         pub recent_blockhash: Hash,
-        pub confirmations: Option<u64>,
-        #[serde(alias = "innerInstruction")]
         pub inner_instructions: Vec<Value>,
-        #[serde(alias = "token_balanes")] // yes typo
+        #[serde(rename = "tokenBalanes")]
         pub token_balances: Vec<Value>,
-        #[serde(alias = "parsedInstruction")]
+        #[serde(rename = "parsedInstruction")]
         pub parsed_instructions: Vec<Value>,
+        pub confirmations: Option<u64>,
+        pub version: String,
         pub token_transfers: Vec<Value>,
         pub sol_transfers: Vec<Value>,
         pub serum_transactions: Vec<Value>,
@@ -79,7 +85,7 @@ api_models! {
         pub unknown_transfers: Vec<Value>,
     }
 
-    pub struct InputAccount {
+    pub struct TransactionInputAccount {
         #[serde(with = "crate::serde_string")]
         pub account: Pubkey,
         pub signer: bool,
@@ -96,8 +102,8 @@ impl Client {
     }
 
     /// Performs an HTTP `GET` request to the `/transaction/{signature}` path.
-    pub async fn transaction(&self, signature: &Signature) -> Result<Transaction2> {
-        self.get_no_query(dbg!(&concat_1("transaction/", &signature.to_string()))).await
+    pub async fn transaction(&self, signature: &Signature) -> Result<GetTransactionInfo> {
+        self.get_no_query(&concat_1("transaction/", &signature.to_string())).await
     }
 }
 
@@ -106,19 +112,42 @@ mod tests {
     use super::*;
 
     #[tokio::test]
-    #[ignore = "unreliable: empty"]
+    // #[ignore = "unreliable: empty"]
     async fn test_transaction_last() {
         let client = Client::new();
-        let res = client.transaction_last(Some(5)).await.unwrap();
-        assert_eq!(res.len(), 5);
+        match client.transaction_last(Some(20)).await {
+            Ok(x) => {
+                if !x.is_empty() {
+                    assert_eq!(x.len(), 20)
+                }
+            }
+            Err(crate::ClientError::UnknownResponse(value)) => {
+                let _: Vec<TransactionInfo> =
+                    serde_json::from_str(&serde_json::to_string(&value).unwrap()).unwrap();
+            }
+            e @ Err(_) => {
+                let _ = e.unwrap();
+            }
+        }
     }
 
     #[tokio::test]
-    #[ignore = "unreliable: 404"]
+    // #[ignore = "unreliable: empty"]
     async fn test_transaction() {
         let client = Client::new();
-        let s = "5YdxDGc9Ki1iAPfNwX4JjGShXUQ7YMd85zEygZdVhk1p8WtnfEdGyJ9cnVVuYLULYrVD6ogdHsy3eNdL9viM5hS6";
-        let res = client.transaction(&s.parse().unwrap()).await.unwrap();
-        assert_eq!(res.tx_hash, s.parse::<Hash>().unwrap());
+        let last_txs = client.transaction_last(Some(1)).await.unwrap();
+        let sig = last_txs.first().unwrap().transaction.signatures.first().unwrap();
+        match client.transaction(sig).await {
+            Ok(x) => {
+                assert_eq!(x.tx_hash, *sig)
+            }
+            Err(crate::ClientError::UnknownResponse(value)) => {
+                let _: GetTransactionInfo =
+                    serde_json::from_str(&serde_json::to_string(&value).unwrap()).unwrap();
+            }
+            e @ Err(_) => {
+                let _ = e.unwrap();
+            }
+        }
     }
 }
