@@ -79,45 +79,16 @@ impl Client {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-
-    const SLOT: u64 = 172407028;
-    const HEIGHT: u64 = 156357404;
-    const TIME: u64 = 1673681099;
-
-    #[tokio::test]
-    async fn test_block_last() {
-        let client = Client::new();
-        let res = client.block_last(Some(5)).await.unwrap();
+    test_route!(test_block_last: |c| c.block_last(Some(5)) => |res| {
         assert_eq!(res.len(), 5);
-    }
+    });
 
-    #[tokio::test]
-    async fn test_block_transactions() {
-        let client = Client::new();
-        let res = client.block_transactions(1, None, None).await.unwrap();
+    test_route!(test_block_transactions: |c| c.block_transactions(1, None, None) => |res| {
         assert!(!res.is_empty());
-    }
+    });
 
-    #[tokio::test]
-    #[ignore = "block missing from storage"]
-    async fn test_block() {
-        let hash: Hash = "3ZQLpHEui4usw8qDNvMTaVjhFzr2upXAyCoysBdgpj52".parse().unwrap();
-
-        let client = Client::new();
-        let res = client.block(SLOT).await.unwrap();
-        assert_eq!(res.current_slot, SLOT);
-        let res = res.result.result().unwrap();
-        assert_eq!(res.block_height, Some(HEIGHT));
-        assert_eq!(res.block_time, Some(TIME));
-        assert_eq!(res.blockhash, hash);
-    }
-
-    #[tokio::test]
-    async fn test_block1() {
-        let client = Client::new();
-        let res = client.block(1).await.unwrap();
+    test_route!(test_block: |c| c.block(1) => |res| {
         assert_eq!(res.current_slot, 1);
         let _ = res.result.result().unwrap();
-    }
+    });
 }

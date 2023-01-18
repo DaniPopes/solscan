@@ -199,32 +199,21 @@ impl Client {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    static TOKEN: &str = "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R";
 
-    #[tokio::test]
-    async fn test_token_holders() {
-        let client = Client::new();
-        let token = "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R".parse().unwrap();
-        let res = client.token_holders(&token, Some(5), None).await.unwrap();
+    test_route!(test_token_holders: |c| c.token_holders(&TOKEN.parse().unwrap(), Some(5), None) => |res| {
         assert_eq!(res.data.len(), 5);
         assert!(res.total > 1000);
-    }
+    });
 
-    #[tokio::test]
-    async fn test_token_meta() {
-        let client = Client::new();
-        let token = "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R".parse().unwrap();
-        let res = client.token_meta(&token).await.unwrap();
-        assert_eq!(res.address, token);
+    test_route!(test_token_meta: |c| c.token_meta(&TOKEN.parse().unwrap()) => |res| {
+        assert_eq!(res.address, TOKEN.parse().unwrap());
         assert_eq!(res.name, "Raydium");
         assert_eq!(res.symbol, "RAY");
-    }
+    });
 
-    #[tokio::test]
-    async fn test_token_list() {
-        let client = Client::new();
-        let res = client.token_list(None, true, Some(100), None).await.unwrap();
+    test_route!(test_token_list: |c| c.token_list(None, true, Some(100), None) => |res| {
         assert_eq!(res.data.len(), 100);
         assert!(res.total > 1000);
-    }
+    });
 }

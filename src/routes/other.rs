@@ -40,27 +40,26 @@ mod tests {
     use super::*;
     use crate::ClientError;
 
-    #[tokio::test]
-    async fn test_market() {
-        let client = Client::new();
-        let token = "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R".parse().unwrap();
-        let res = client.market(&token).await.unwrap();
+    static TOKEN: &str = "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R";
+
+    test_route!(test_market: |c| c.market(&TOKEN.parse().unwrap()) => |res| {
         assert!(res.price_usdt.is_normal());
         assert_ne!(res.volume_usdt, 0);
-    }
+    });
 
-    #[tokio::test]
-    async fn test_chain_info() {
-        let client = Client::new();
-        let res = client.chain_info().await.unwrap();
+    test_route!(test_chain_info: |c| c.chain_info() => |res| {
         assert!(res.block_height > 156339814);
-    }
+    });
+
+    // test_route!(test_tools_inspect: |c| c.tools_inspect(String::new()) => |res| {
+    //     // ?
+    // });
 
     #[tokio::test]
     async fn test_tools_inspect() {
         let client = Client::new();
         let err = client.tools_inspect(String::new()).await.unwrap_err();
-        let ClientError::Response(err) = err else { panic!(); };
+        let ClientError::Response(err) = err else { panic!("{err}"); };
         assert_eq!(err.status, 500);
     }
 }

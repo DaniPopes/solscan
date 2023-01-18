@@ -99,32 +99,18 @@ impl Client {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-
     static ACCOUNT: &str = "3SKLz31aEBqQQYeiGaezGP7v7ZEJvAmSGwBqU1zLJkgn";
 
-    #[tokio::test]
-    async fn test_account_tokens() {
-        let client = Client::new();
-        let account = ACCOUNT.parse().unwrap();
-        let res = client.account_tokens(&account).await.unwrap();
+    test_route!(test_account_tokens: |c| c.account_tokens(&ACCOUNT.parse().unwrap()) => |res| {
         assert!(!res.is_empty());
-    }
+    });
 
-    #[tokio::test]
-    async fn test_account_transactions() {
-        let client = Client::new();
-        let account = ACCOUNT.parse().unwrap();
-        let res = client.account_transactions(&account, None, None).await.unwrap();
+    test_route!(test_account_transactions: |c| c.account_transactions(&ACCOUNT.parse().unwrap(), None, None) => |res| {
         assert!(!res.is_empty());
-    }
+    });
 
-    #[tokio::test]
-    async fn test_account() {
-        let client = Client::new();
-        let account = ACCOUNT.parse().unwrap();
-        let res = client.account(&account).await.unwrap();
-        assert_eq!(res.account, account);
+    test_route!(test_account: |c| c.account(&ACCOUNT.parse().unwrap()) => |res| {
+        assert_eq!(res.account, ACCOUNT.parse().unwrap());
         assert_ne!(res.lamports, 0);
-    }
+    });
 }

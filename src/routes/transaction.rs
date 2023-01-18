@@ -109,45 +109,18 @@ impl Client {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-
-    #[tokio::test]
-    // #[ignore = "unreliable: empty"]
-    async fn test_transaction_last() {
-        let client = Client::new();
-        match client.transaction_last(Some(20)).await {
-            Ok(x) => {
-                if !x.is_empty() {
-                    assert_eq!(x.len(), 20)
-                }
-            }
-            Err(crate::ClientError::UnknownResponse(value)) => {
-                let _: Vec<TransactionInfo> =
-                    serde_json::from_str(&serde_json::to_string(&value).unwrap()).unwrap();
-            }
-            e @ Err(_) => {
-                let _ = e.unwrap();
-            }
+    test_route!(test_transaction_last: |c| c.transaction_last(Some(20)) => |res| {
+        if !res.is_empty() {
+            assert_eq!(res.len(), 20)
         }
-    }
+    });
 
-    #[tokio::test]
-    // #[ignore = "unreliable: empty"]
-    async fn test_transaction() {
-        let client = Client::new();
-        let last_txs = client.transaction_last(Some(1)).await.unwrap();
+    test_route!(test_transaction: |c| async {
+        let last_txs = c.transaction_last(Some(1)).await.unwrap();
         let sig = last_txs.first().unwrap().transaction.signatures.first().unwrap();
-        match client.transaction(sig).await {
-            Ok(x) => {
-                assert_eq!(x.tx_hash, *sig)
-            }
-            Err(crate::ClientError::UnknownResponse(value)) => {
-                let _: GetTransactionInfo =
-                    serde_json::from_str(&serde_json::to_string(&value).unwrap()).unwrap();
-            }
-            e @ Err(_) => {
-                let _ = e.unwrap();
-            }
-        }
-    }
+        c.transaction(sig).await.map(|res| {
+            assert_eq!(res.tx_hash, *sig);
+            res
+        })
+    } => |_res| {});
 }
