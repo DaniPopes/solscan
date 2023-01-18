@@ -7,8 +7,6 @@ use crate::{
 };
 use serde_json::Value;
 
-// TODO: fix some values
-
 api_models! {
     pub struct TransactionInfo {
         #[serde(default)]
@@ -92,6 +90,32 @@ api_models! {
         pub writable: bool,
         pub pre_balance: u64,
         pub post_balance: u64,
+    }
+}
+
+#[cfg(feature = "sdk")]
+impl From<TransactionInfo> for solana_sdk::transaction::Transaction {
+    fn from(value: TransactionInfo) -> Self {
+        value.transaction.into()
+    }
+}
+
+#[cfg(feature = "sdk")]
+impl From<Transaction> for solana_sdk::transaction::Transaction {
+    fn from(value: Transaction) -> Self {
+        let Transaction { message, signatures } = value;
+        let TransactionMessage {
+            account_keys,
+            address_table_lookups: _,
+            instructions: _,
+            recent_blockhash,
+        } = message;
+
+        let account_keys = account_keys.into_iter().map(|key| key.pubkey).collect();
+        let message =
+            solana_sdk::message::Message { account_keys, recent_blockhash, ..Default::default() };
+
+        Self { signatures, message }
     }
 }
 
