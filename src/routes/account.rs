@@ -99,6 +99,8 @@ impl Client {
 
 #[cfg(test)]
 mod tests {
+    use crate::solana::Pubkey;
+
     static ACCOUNT: &str = "3SKLz31aEBqQQYeiGaezGP7v7ZEJvAmSGwBqU1zLJkgn";
 
     test_route!(test_account_tokens: |c| c.account_tokens(&ACCOUNT.parse().unwrap()) => |res| {
@@ -110,7 +112,7 @@ mod tests {
     });
 
     test_route!(test_account: |c| c.account(&ACCOUNT.parse().unwrap()) => |res| {
-        assert_eq!(res.account, ACCOUNT.parse().unwrap());
+        assert_eq!(res.account, ACCOUNT.parse::<Pubkey>().unwrap());
         assert_ne!(res.lamports, 0);
     });
 }

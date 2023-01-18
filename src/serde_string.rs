@@ -1,7 +1,7 @@
 use serde::{Deserialize, Deserializer, Serializer};
 
 pub fn serialize<S: Serializer>(value: &String, s: S) -> Result<S::Ok, S::Error> {
-    s.serialize_str(&value)
+    s.serialize_str(value)
 }
 
 pub fn deserialize<'de, D>(d: D) -> Result<String, D::Error>

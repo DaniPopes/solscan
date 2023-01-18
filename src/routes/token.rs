@@ -199,6 +199,8 @@ impl Client {
 
 #[cfg(test)]
 mod tests {
+    use crate::solana::Pubkey;
+
     static TOKEN: &str = "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R";
 
     test_route!(test_token_holders: |c| c.token_holders(&TOKEN.parse().unwrap(), Some(5), None) => |res| {
@@ -207,7 +209,7 @@ mod tests {
     });
 
     test_route!(test_token_meta: |c| c.token_meta(&TOKEN.parse().unwrap()) => |res| {
-        assert_eq!(res.address, TOKEN.parse().unwrap());
+        assert_eq!(res.address, TOKEN.parse::<Pubkey>().unwrap());
         assert_eq!(res.name, "Raydium");
         assert_eq!(res.symbol, "RAY");
     });
