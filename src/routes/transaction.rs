@@ -93,14 +93,14 @@ api_models! {
     }
 }
 
-#[cfg(feature = "sdk")]
+#[cfg(feature = "sdk-full")]
 impl From<TransactionInfo> for solana_sdk::transaction::Transaction {
     fn from(value: TransactionInfo) -> Self {
         value.transaction.into()
     }
 }
 
-#[cfg(feature = "sdk")]
+#[cfg(feature = "sdk-full")]
 impl From<Transaction> for solana_sdk::transaction::Transaction {
     fn from(value: Transaction) -> Self {
         let Transaction { message, signatures } = value;
